@@ -8,8 +8,8 @@ function signUp() {
         document.getElementById("message").innerHTML="Password does not match"
         return;
     }
-    // 'https://fair-erin-lizard.cyclic.app/signup 
-    axios.post('http://localhost:3000/signup', {
+    //  'https://turquoise-eel-sari.cyclic.app/'
+    axios.post('https://turquoise-eel-sari.cyclic.app/signup', {
         firstName,
         lastName,
         email,
@@ -28,7 +28,7 @@ function signUp() {
 function login() {
     let email = document.getElementById('lemail').value;
     let password = document.getElementById('lpassword').value;
-    axios.post('http://localhost:3000/login', {
+    axios.post('https://turquoise-eel-sari.cyclic.app/login', {
         email,
         password
     })
