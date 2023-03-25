@@ -9,7 +9,7 @@ function signUp() {
         return;
     }
     //  'https://turquoise-eel-sari.cyclic.app/'
-    axios.post('https://turquoise-eel-sari.cyclic.app/signup', {
+    axios.post('http://localhost:3000/signup', {
         firstName,
         lastName,
         email,
@@ -28,7 +28,7 @@ function signUp() {
 function login() {
     let email = document.getElementById('lemail').value;
     let password = document.getElementById('lpassword').value;
-    axios.post('https://turquoise-eel-sari.cyclic.app/login', {
+    axios.post('http://localhost:3000/login', {
         email,
         password
     })

@@ -3,6 +3,11 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import { stringToHash, varifyHash } from "bcrypt-inzi"
 // import {nanoid} from 'nanoid'
+import CryptoJS from 'crypto-js'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+
 const app = express();
 
 app.use(express.json());
@@ -34,43 +39,47 @@ app.post("/signup", async (req, res) => {
         return;
     }
 
+
+    let encpass = CryptoJS.AES.encrypt(body.password, process.env.SECRET_KEY).toString();
     let newUser = {
         firstName: body.firstName,
         lastName: body.lastName,
         email: body.email.toLowerCase(),
-        password: body.password
+        password: encpass
+
     }
+    // U2FsdGVkX184atRtMVKoBt3B/YYZfGi7FIqawWdS+n4= 
+    
 
     // const findOne = async () => {
-        
-        const data = await userModel.findOne({email:body.email});
-        console.log(data);
-        try{
-            if(data!==null){
-                console.log("Data is already present");
-                res.send({message:"User exists please login"})
-            }
-            else{
-                    userModel.create(newUser)
-                    .then((res)=>{
-                        console.log(res+"ding dong");
-                    })
-                    
-                    res.send({message:"User created"})
-                
-            }
+
+    const data = await userModel.findOne({ email: body.email });
+    console.log(data);
+    try {
+        if (data !== null) {
+            console.log("Data is already present");
+            res.send({ message: "User exists please login" })
         }
-        catch(err){
-            res.send("Error")
-            console.log("err: "+err);
+        else {
+            userModel.create(newUser)
+                .then((res) => {
+                    console.log(res + "ding dong");
+                })
+
+            res.send({ message: "User created" })
+
         }
+    }
+    catch (err) {
+        res.send("Error")
+        console.log("err: " + err);
+    }
 })
 
 
 app.post("/login", async (req, res) => {
 
     let body = req.body;
-
     if (!body.email || !body.password) { // null check - undefined, "", 0 , false, null , NaN
         res.status(400).send(
             `required fields missing, request example: 
@@ -81,22 +90,24 @@ app.post("/login", async (req, res) => {
         );
         return;
     }
-    const data = await userModel.findOne({email:body.email});
-    try{
-        if(data){
-            if(data.password!=body.password){
-                res.send({message:"Incorrect password"})
+    const data = await userModel.findOne({ email: body.email });
+    
+    try {
+        if (data) {
+            var decpass = CryptoJS.AES.decrypt(data.password, process.env.SECRET_KEY).toString(CryptoJS.enc.Utf8);
+            if (decpass!= body.password) {
+                res.send({ message: "Incorrect password" })
                 return;
             }
             console.log("Data is already present");
-                res.send({message:"Logged in Successfully"})
+            res.send({ message: "Logged in Successfully" })
         }
-        else{
+        else {
             console.log("No user exists");
-            res.send({message:"User does not exists, please signup"})
+            res.send({ message: "User does not exists, please signup" })
         }
     }
-    catch(err){
+    catch (err) {
         console.log(err);
     }
 })
@@ -121,7 +132,7 @@ app.listen(port, () => {
 
 
 // mongodb+srv://verselon2000:<password>@cluster0.6j4igyn.mongodb.net/?retryWrites=true&w=majority
-let dbURI = 'mongodb+srv://verselon2000:W4iqNZvQcMrmNi31@cluster0.6j4igyn.mongodb.net/socialMediaBase?retryWrites=true&w=majority'
+let dbURI = process.env.DATABASE_URI;
 mongoose.connect(dbURI);
 
 mongoose.connection.on('connected', () => {
