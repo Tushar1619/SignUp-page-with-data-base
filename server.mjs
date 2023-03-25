@@ -115,9 +115,6 @@ app.post("/login", async (req, res) => {
 
 
 
-app.listen(port, () => {
-    console.log(`Listening on port ${port}`);
-})
 
 
 
@@ -156,4 +153,16 @@ process.on('SIGINT', () => {
         console.log("Mongoose default connection closed");
         process.exit(0);
     })
+})
+
+
+
+
+
+
+
+
+
+app.listen(port, () => {
+    console.log(`Listening on port ${port}`);
 })
